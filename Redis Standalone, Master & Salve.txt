@@ -1,0 +1,9 @@
+How to install Redis Standalone using Bitnami docker containers:
+docker run --name redis001 --restart=always -e ALLOW_EMPTY_PASSWORD=yes --publish 6379:8400 bitnami/redis:latest
+
+Redis Master & Salve using official Redis docker containers
+docker run --name redis001-master --restart=always --publish 8400:6379 -d redis redis-server 
+
+docker run --name redis001-slave --restart=always --publish 8401:6379 -d redis redis-server --replicaof 172.17.0.1 8400
+
+*172.17.0.1 is Docker’s default bridge gateway and is the equivalent to host.docker.internal on some systems.

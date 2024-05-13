@@ -1,0 +1,21 @@
+What is Apache Kafka and Why Use It?
+Apache Kafka is a distributed streaming platform that is used to publish and subscribe to streams of records. It’s capable of processing large amounts of data. and it’s the backbone for many applications such as real-time analytics and IoT device management.Kafka was originally developed by LinkedIn engineers as part of the company’s Hadoop infrastructure, but it was released as an open source project in 2011. Apache Kafka is a fast, scalable, durable, and fault tolerant publish-subscribe messaging system. It can be used for real-time data integration with low latency.
+So why is it so Complicated?
+There are a number of reasons why Kafka deployment is so complicated:
+Kafka doesn’t have a centralized broker.You need to configure each node and make sure all nodes are running the same version, which can be difficult if you don’t have access to the underlying OS.You need to configure all your network interfaces with static IPs or hostnames.There are no user-friendly installation scripts for Kafka, so you need to install it manually.
+What are some of the Common Security Concerns?
+Protecting the Kafka broker from unauthorized accessSecuring the Kafka cluster data at rest by encryptionSecuring the network links between Kafka brokers and between brokers and clientsProtecting against denial of service attacks
+What Are the Pros and Cons of Using Apache Kafka?
+Pros:
+Kafka is open source and written in Scala which makes it easy to integrate with other systems.It can handle a lot of data and has a high throughput.It is scalable for the future growth of the business due to its ability to process data in real time.The messages are persisted in a fault tolerant way which means that they are not lost when there’s an outage or crash.
+Cons:
+Kafka requires a lot of resources from the system which can be costly for small companies with limited budgets.
+How should Apache Kafka be Deployed in Production?
+The Apache Kafka has two modes of deployment:
+Standalone modeCluster mode
+In both modes, the producer sends data to the broker and the consumer reads from it. The difference between these two modes is that in cluster mode, there are multiple brokers that can serve as a single point of failure while in standalone mode all the brokers are independent and can be used to increase capacity and provide redundancy.Cluster mode is the default mode for Kafka brokers so it is recommended to use this in production settings. The cluster mode works by creating a number of independent broker nodes that process incoming requests and then multicasts a log message to all the remaining broker nodes, which then store it for processing. These messages are called logs, and the sequence number of each log is unique. This means that all the Kafka brokers in a cluster can process any log, and will receive it in chronological order. In standalone mode, each broker is responsible for its own production logs. The idea behind this is to use multiple brokers to increase capacity and redundancy. Standalone mode has some limitations in handling high volume of connections.
+Apache Kafka in real-life scenarios
+It has been used in various real-life scenarios like,
+A social media app that needs to update its feed in real-timeA retail company that needs to process orders in real time and keep track of inventory levelsA company with a fleet of trucks that need to monitor the trucks’ location, speed, fuel level etc.An application that monitors the temperature of warehouses and sends alerts when it exceeds certain limitsA bank which needs to monitor all transactions for fraud detection purposes.
+*For a good read about Kafka, make sure to check “Kafka: The Definitive Guide”. Available on Amazon.ca and my book section here on Provlima.com
+By the way, a robot wrote this entire article with little to no human intervention. What do you think?

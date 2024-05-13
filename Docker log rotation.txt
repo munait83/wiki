@@ -1,0 +1,26 @@
+To enable docker log rotation to be the default on all created containers:
+-Create /etc/docker/daemon.json and restart docker
+vim /etc/docker/daemon.json
+
+
+{
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "10m",
+    "max-file": "3" 
+  }
+}
+
+
+#Restart Docker
+systemctl restart docker
+Notice that it won’t apply to existing containers. You may recreate them to have the setting applied or stop docker service and go to each container’s hostconfig.jason file and edit as follows:
+Your container (abc) is located on /var/lib/docker/containers/abc/
+vim /var/lib/docker/containers/abc/hostconfig.jason
+In the file, look for:
+{"Type":"json-file","Config":{}}
+and change that to:
+{"Type":"json-file","Config":{"max-file":"3","max-size":"10m"}}
+then 
+systemctl start docker
+* Remember that docker must be stopped before the change, otherwise docker engine will revert the changes.

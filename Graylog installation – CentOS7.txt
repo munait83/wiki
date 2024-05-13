@@ -1,0 +1,67 @@
+Server installation: (Docker container)
+docker run --name mongo --restart=always -d mongo:3
+ docker run --name elasticsearch     -e "http.host=0.0.0.0"     -e "ES_JAVA_OPTS=-Xms1024m -Xmx1024m" --restart=always     -d docker.elastic.co/elasticsearch/elasticsearch-oss:6.8.8
+ docker run --name graylog --link mongo --link elasticsearch     -p 8080:9000 -p 13003:13003 --restart=always     -e GRAYLOG_HTTP_EXTERNAL_URI="http://graylog.provlima.com:8080/"     -d graylog/graylog:3.2
+-Increase vm.max_map_count (needed for elastic search)
+grep vm.max_map_count /etc/sysctl.conf
+ vim /etc/sysctl.conf
+ add to file:
+ vm.max_map_count=262144
+ reload settings:
+ sysctl -p
+Graylog Configuration:
+-Create API Token:
+login to graylog-> System/Authentication -> Sidecars -> Create or reuse a token for the graylog-sidecar user -> Create token -> Copy to clipboard (SideCarToken)
+-Create Beats input:
+System-> inputs – >select input type (Beats) then Launch
+Global: Checked
+ Title: Beats input
+ Bind adrress: 0.0.0.0
+ Port: 13003
+ Do not add Beats type as prefix: Checked
+– System -> sidecar -> configuration -> create a new configuration – >
+*The configuration here are specific to the host so it could be grouped based on usage. (This is also the place to define what logs to be collected)
+Sample filebeat configuraiton:
+ # Needed for Graylog
+ fields_under_root: true
+ fields.collector_node_id: ${sidecar.nodeName}
+ fields.gl2_source_collector: ${sidecar.nodeId}
+ fields.source: ${sidecar.nodeName}
+  filebeat.inputs:
+ input_type: log paths: /var/log/*.log
+ /home/user1/tomcat/logs/*.log
+ type: log
+ output.logstash:
+ hosts: ["4.4.4.4:13003"]
+ path:
+ data: /var/lib/graylog-sidecar/collectors/filebeat/data
+ logs: /var/lib/graylog-sidecar/collectors/filebeat/log 
+– To assign the created configuration to a host go to
+System -> sidecar -> configuration -> Administration
+You’ll see list of of active hosts. Check what collector to assign and then on the same screen (right upper corner to the gray bar) click configure and pick the configuration to apply.back to same page System -> sidecar -> configuration -> Administration, you’ll see the host (running) and what configuration been applied there.
+Host configuration:
+-Sidecar installation:
+rpm -Uvh https://packages.graylog2.org/repo/packages/graylog-sidecar-repository-1-2.noarch.rpm
+ yum install graylog-sidecar -y
+ vim /etc/graylog/sidecar/sidecar.yml
+ add
+ server_api_token: "xxxxxxxx" server_url: "http://4.4.4.4:13002/api/"
+ graylog-sidecar -service install       
+ systemctl restart graylog-sidecar
+ systemctl enable graylog-sidecar
+ *Now the host should appear in System-> sidecar overview page
+-File-beat installation:  (nothing to configure here – pushed automatically by sidecar)
+rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+ vim /etc/yum.repos.d/elastic.repo
+         [elastic-7.x]
+         name=Elastic repository for 7.x packages
+         baseurl=https://artifacts.elastic.co/packages/7.x/yum
+         gpgcheck=1
+         gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+         enabled=1
+         autorefresh=1
+         type=rpm-md
+ yum install filebeat -y
+ systemctl enable filebeat
+ systemctl start filebeat
+*To view if File-beat configuration being pushed or not: cat  /var/lib/graylog-sidecar/generated/filebeat.conf

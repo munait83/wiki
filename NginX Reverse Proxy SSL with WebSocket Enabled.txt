@@ -1,0 +1,78 @@
+Edit main nginx configuration file:
+user  nginx;
+worker_processes  2;
+ 
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+ 
+ 
+events {
+worker_connections  1024;
+}
+ 
+ 
+http {
+ 
+include       /etc/nginx/mime.types;
+default_type  application/octet-stream;
+ 
+log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+'$status $body_bytes_sent "$http_referer" '
+'"$http_user_agent" "$http_x_forwarded_for"';
+ 
+access_log  /var/log/nginx/access.log  main;
+ 
+sendfile        on;
+#tcp_nopush     on;
+ 
+keepalive_timeout  65;
+ 
+#gzip  on;
+ 
+#-> Websocket
+map $http_upgrade $connection_upgrade {
+default upgrade;
+'' close;
+}
+#<--Websocket
+ 
+ 
+ 
+include /etc/nginx/conf.d/*.conf;
+}
+Add site1 configuration file
+upstream websocket {
+server 192.168.1.10:8043;
+}
+ 
+server {
+ 
+listen 10.4.4.200:443 ssl;
+ 
+server_name site1.provlima.com;
+ssl_certificate     /data/cert/cert.crt;
+ssl_certificate_key /data/cert/cert.key;
+ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+ssl_ciphers         HIGH:!aNULL:!MD5;
+ 
+ 
+proxy_connect_timeout 60s;
+proxy_send_timeout 120s;
+proxy_read_timeout 120s;
+ 
+ 
+ 
+location / {
+ 
+proxy_pass https://site1.internal.com:8043;
+proxy_http_version 1.1;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection $connection_upgrade;
+ 
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header Host $host;
+ 
+}
+ 
+}

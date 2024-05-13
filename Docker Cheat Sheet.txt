@@ -1,0 +1,46 @@
+#Download CentOS 7 base image
+docker pull centos:centos7
+
+#Run container with name, host network, auto-start and host share
+docker run --name myContainer -v /host/directory:/container/directory --network=host --restart=always  -it myContainerImage
+
+#Rename Docker image
+docker tag Old_Image_Name_OR_ID New_Image_Name
+
+#Save container to image
+docker commit Container_Name  Image_Name
+
+#Show mapped ports
+docker port ContainerName
+
+#Start Container
+docker start Name_or_ID
+
+#Stop Container
+docker stop Name_or_ID
+
+#Attach to container
+docker attach Container_Name or ID
+
+#Attach to bash in container
+docker exec -it Container_ID /bin/bash
+
+#Exit container without killing it (when “always restart” isn’t set)
+Ctrl pq
+
+#To save docker image as file
+docker save -o <path for generated tar file> <image name>  
+///-- docker save -o myContainer centos:7
+
+#To load docker image from file
+docker load -i <path to image tar file>   
+///--- docker load --input myContainer.tar
+
+# View docker container logs
+docker logs Container_Name_or_ID -f   #<--- -f to tail 
+
+#Add user to Docker group
+usermod -aG docker $USER
+
+#Remove all stopped containers
+docker rm $(docker ps --filter status=exited -q)

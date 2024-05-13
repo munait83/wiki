@@ -1,0 +1,4 @@
+Copy to container:
+docker cp site1.conf container1:/etc/nginx/conf.d/site1.conf
+Copy from container:
+docker cp container1:/etc/nginx/conf.d/site1.conf site1.conf

@@ -1,0 +1,5 @@
+List allowed SELinux ports
+sudo semanage port -l 
+
+Allow port:
+sudo semanage port -a -t http_port_t  -p tcp 9700

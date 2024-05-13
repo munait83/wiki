@@ -1,0 +1,26 @@
+Server installation using docker container:#Spin Zabbix Container
+docker run --name zabbix-box -p 80:80 --restart=always -d zabbix-image:latest 
+
+# attach to container
+docker exec -ti zabbix-box /bin/bashMain configuration files :# set server name
+/etc/zabbix/web/zabbix.conf.php 
+ 
+# Main server configuration file
+conf/etc/zabbix/zabbix_server.confTo change server time :# Attach to docker container
+docker exec -ti zabbix-box /bin/bash  
+
+# Edit timezone in entry script then save and restart
+vim /usr/bin/docker-entrypoint.shAgent Install – CentOS 7# Download Repo and install agent
+rpm -Uvh https://repo.zabbix.com/zabbix/4.0/rhel/7/x86_64/zabbix-release-4.0-2.el7.noarch.rpm
+
+yum install zabbix zabbix-agent -y  
+
+# Set agent as a service & start
+systemctl enable zabbix-agent
+systemctl start zabbix-agentAgent configuration:vim /etc/zabbix/zabbix_agentd.conf 
+
+Server=[zabbix server ip] Server=192.168.1.22
+
+Hostname=[Hostname of client system] Hostname=clientHostname
+
+Restart agent after any configuration change

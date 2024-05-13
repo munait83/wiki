@@ -1,0 +1,6 @@
+How to disable vim visual mode:
+-Inside vim 
+:set mouse-=a
+
+-or
+echo "set mouse-=a" >> ~/.vimrc
